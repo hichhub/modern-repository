@@ -36,18 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 var sift_1 = require("sift");
-exports.EVENTS_CONST = {
-    BEFORE_EDIT: "BEFORE_EDIT",
-    AFTER_EDIT: "AFTER_EDIT",
-    BEFORE_ADD: "BEFORE_ADD",
-    AFTER_ADD: "AFTER_ADD",
-    BEFORE_GET: "BEFORE_GET",
-    AFTER_GET: "AFTER_GET",
-    BEFORE_DELETE: "BEFORE_DELETE",
-    AFTER_DELETE: "AFTER_DELETE",
-    BEFORE_SEARCH: "BEFORE_SEARCH",
-    AFTER_SEARCH: "AFTER_SEARCH"
-};
+var consts_1 = require("../consts");
 var OfflineRepository = /** @class */ (function () {
     function OfflineRepository(modelClass, eventHandler, buffer, modelToPkFn) {
         this.modelClass = modelClass;
@@ -69,12 +58,12 @@ var OfflineRepository = /** @class */ (function () {
                             repo: this,
                             model: model
                         };
-                        this.eventHandler.emit(exports.EVENTS_CONST.BEFORE_ADD, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_ADD, eventPayload);
                         pk = this.modelToPkFn(model);
                         return [4 /*yield*/, this.buffer.set(this.getPk(pk), model)];
                     case 1:
                         _a.sent();
-                        this.eventHandler.emit(exports.EVENTS_CONST.AFTER_ADD, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_ADD, eventPayload);
                         return [2 /*return*/, model];
                 }
             });
@@ -90,7 +79,7 @@ var OfflineRepository = /** @class */ (function () {
                             repo: this,
                             model: model
                         };
-                        this.eventHandler.emit(exports.EVENTS_CONST.BEFORE_DELETE, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_DELETE, eventPayload);
                         if (model instanceof this.modelClass) {
                             pk = this.modelToPkFn(model);
                         }
@@ -101,7 +90,7 @@ var OfflineRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.buffer.del(pkStr)];
                     case 1:
                         _a.sent();
-                        this.eventHandler.emit(exports.EVENTS_CONST.AFTER_DELETE, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_DELETE, eventPayload);
                         return [2 /*return*/, model];
                 }
             });
@@ -117,12 +106,12 @@ var OfflineRepository = /** @class */ (function () {
                             repo: this,
                             model: model
                         };
-                        this.eventHandler.emit(exports.EVENTS_CONST.BEFORE_EDIT, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_EDIT, eventPayload);
                         pk = this.modelToPkFn(model);
                         return [4 /*yield*/, this.buffer.set(this.getPk(pk), model)];
                     case 1:
                         _a.sent();
-                        this.eventHandler.emit(exports.EVENTS_CONST.AFTER_EDIT, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_EDIT, eventPayload);
                         return [2 /*return*/, model];
                 }
             });
@@ -139,12 +128,12 @@ var OfflineRepository = /** @class */ (function () {
                             primaryKey: primaryKey,
                             model: null
                         };
-                        this.eventHandler.emit(exports.EVENTS_CONST.BEFORE_GET, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_GET, eventPayload);
                         return [4 /*yield*/, this.buffer.get(this.getPk(primaryKey))];
                     case 1:
                         model = _a.sent();
                         eventPayload.model = model;
-                        this.eventHandler.emit(exports.EVENTS_CONST.AFTER_GET, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_GET, eventPayload);
                         return [2 /*return*/, model];
                 }
             });
@@ -165,7 +154,7 @@ var OfflineRepository = /** @class */ (function () {
                             limit: limit,
                             models: null
                         };
-                        this.eventHandler.emit(exports.EVENTS_CONST.BEFORE_SEARCH, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_SEARCH, eventPayload);
                         return [4 /*yield*/, this.buffer.toArray(function (v) { return !!v; })];
                     case 1:
                         dataArray = _a.sent();
@@ -173,7 +162,7 @@ var OfflineRepository = /** @class */ (function () {
                             .splice(skip, limit);
                         // fixme:: handle order in query
                         eventPayload.models = result;
-                        this.eventHandler.emit(exports.EVENTS_CONST.AFTER_SEARCH, eventPayload);
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_SEARCH, eventPayload);
                         return [2 /*return*/, result];
                 }
             });

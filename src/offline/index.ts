@@ -2,19 +2,8 @@ import sift from "sift";
 import IRepository from "../IRepository";
 import {IEventEmitter} from "@hichestan/ui-misc/src/EventHandler";
 import {IPersistableCircularBuffer} from "circular_buffer/src/interfaces/ICircularBuffer";
+import {EVENTS_CONST} from "../consts";
 
-export const EVENTS_CONST = {
-	BEFORE_EDIT: "BEFORE_EDIT",
-	AFTER_EDIT: "AFTER_EDIT",
-	BEFORE_ADD: "BEFORE_ADD",
-	AFTER_ADD: "AFTER_ADD",
-	BEFORE_GET: "BEFORE_GET",
-	AFTER_GET: "AFTER_GET",
-	BEFORE_DELETE: "BEFORE_DELETE",
-	AFTER_DELETE: "AFTER_DELETE",
-	BEFORE_SEARCH: "BEFORE_SEARCH",
-	AFTER_SEARCH: "AFTER_SEARCH",
-};
 
 export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 
