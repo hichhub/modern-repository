@@ -1,7 +1,8 @@
 import MemkvStore from "circular_buffer/src/modules/memkvstore";
 import PersistableCircularBuffer from "circular_buffer/src/modules/persistable_circularbuffer";
-import OfflineRepository, {EVENTS_CONST} from "./index";
+import OfflineRepository from "./index";
 import EventHandler from "@hichestan/ui-misc/src/EventHandler";
+import {EVENTS_CONST} from "../consts";
 
 class Model {
 	p1: number;

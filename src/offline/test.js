@@ -40,6 +40,7 @@ var memkvstore_1 = require("circular_buffer/src/modules/memkvstore");
 var persistable_circularbuffer_1 = require("circular_buffer/src/modules/persistable_circularbuffer");
 var index_1 = require("./index");
 var EventHandler_1 = require("@hichestan/ui-misc/src/EventHandler");
+var consts_1 = require("../consts");
 var Model = /** @class */ (function () {
     function Model() {
     }
@@ -59,17 +60,17 @@ var Main = function () { return __awaiter(_this, void 0, void 0, function () {
                 buffer = new persistable_circularbuffer_1["default"](1000, store, "test");
                 eventHandler = EventHandler_1["default"].getInstance("test");
                 offRepo = new index_1["default"](new Model(), eventHandler, buffer, function (x) { return x.p1; });
-                eventHandler.on(index_1.EVENTS_CONST.BEFORE_ADD, function (x) {
-                    console.log(index_1.EVENTS_CONST.BEFORE_ADD, x);
+                eventHandler.on(consts_1.EVENTS_CONST.BEFORE_ADD, function (x) {
+                    console.log(consts_1.EVENTS_CONST.BEFORE_ADD, x);
                 });
-                eventHandler.on(index_1.EVENTS_CONST.AFTER_ADD, function (x) {
-                    console.log(index_1.EVENTS_CONST.AFTER_ADD, x);
+                eventHandler.on(consts_1.EVENTS_CONST.AFTER_ADD, function (x) {
+                    console.log(consts_1.EVENTS_CONST.AFTER_ADD, x);
                 });
-                eventHandler.on(index_1.EVENTS_CONST.BEFORE_SEARCH, function (x) {
-                    console.log(index_1.EVENTS_CONST.BEFORE_SEARCH, x);
+                eventHandler.on(consts_1.EVENTS_CONST.BEFORE_SEARCH, function (x) {
+                    console.log(consts_1.EVENTS_CONST.BEFORE_SEARCH, x);
                 });
-                eventHandler.on(index_1.EVENTS_CONST.AFTER_SEARCH, function (x) {
-                    console.log(index_1.EVENTS_CONST.AFTER_SEARCH, x);
+                eventHandler.on(consts_1.EVENTS_CONST.AFTER_SEARCH, function (x) {
+                    console.log(consts_1.EVENTS_CONST.AFTER_SEARCH, x);
                 });
                 for (i = 0; i < 3; i++) {
                     newModel = new Model();
