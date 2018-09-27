@@ -44,10 +44,6 @@ var OfflineRepository = /** @class */ (function () {
         this.buffer = buffer;
         this.modelToPkFn = modelToPkFn;
     }
-    OfflineRepository.prototype.getPk = function (primaryKey) {
-        var key = typeof primaryKey === "string" ? primaryKey : JSON.stringify(primaryKey);
-        return key;
-    };
     OfflineRepository.prototype.add = function (model) {
         return __awaiter(this, void 0, void 0, function () {
             var eventPayload, pk;
@@ -55,8 +51,8 @@ var OfflineRepository = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         eventPayload = {
-                            repo: this,
-                            model: model
+                            model: model,
+                            repo: this
                         };
                         this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_ADD, eventPayload);
                         pk = this.modelToPkFn(model);
@@ -76,8 +72,8 @@ var OfflineRepository = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         eventPayload = {
-                            repo: this,
-                            model: model
+                            model: model,
+                            repo: this
                         };
                         this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_DELETE, eventPayload);
                         if (model instanceof this.modelClass) {
@@ -167,6 +163,10 @@ var OfflineRepository = /** @class */ (function () {
                 }
             });
         });
+    };
+    OfflineRepository.prototype.getPk = function (primaryKey) {
+        var key = typeof primaryKey === "string" ? primaryKey : JSON.stringify(primaryKey);
+        return key;
     };
     return OfflineRepository;
 }());

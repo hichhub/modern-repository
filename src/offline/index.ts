@@ -1,9 +1,8 @@
-import sift from "sift";
-import IRepository from "../IRepository";
 import {IEventEmitter} from "@hichestan/ui-misc/src/EventHandler";
 import {IPersistableCircularBuffer} from "circular_buffer/src/interfaces/ICircularBuffer";
+import sift from "sift";
 import {EVENTS_CONST} from "../consts";
-
+import IRepository from "../IRepository";
 
 export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 
@@ -12,26 +11,21 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 	private modelToPkFn: (model: T) => PK;
 	private modelClass: T;
 
-	constructor(modelClass: T, eventHandler: IEventEmitter, buffer: IPersistableCircularBuffer<T>, modelToPkFn: (model: T) => PK) {
+	constructor (modelClass: T, eventHandler: IEventEmitter, buffer: IPersistableCircularBuffer<T>, modelToPkFn: (model: T) => PK) {
 		this.modelClass = modelClass;
 		this.eventHandler = eventHandler;
 		this.buffer = buffer;
 		this.modelToPkFn = modelToPkFn;
 	}
 
-	private getPk(primaryKey: PK): string {
-		const key = typeof primaryKey === "string" ? primaryKey : JSON.stringify(primaryKey);
-		return key;
-	}
-
-	async add(model: T): Promise<T> {
+	public async add (model: T): Promise<T> {
 		const eventPayload = {
+			model,
 			repo: this,
-			model
 		};
 
 		this.eventHandler.emit(EVENTS_CONST.BEFORE_ADD, eventPayload);
-		//fixme: check promise from circular_buffer
+		// fixme: check promise from circular_buffer
 
 		const pk = this.modelToPkFn(model);
 		await this.buffer.set(this.getPk(pk), model);
@@ -39,17 +33,17 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 		return model;
 	}
 
-	async delete(model: T | PK): Promise<boolean | T> {
+	public async delete (model: T | PK): Promise<boolean | T> {
 		const eventPayload = {
+			model,
 			repo: this,
-			model
 		};
 
 		this.eventHandler.emit(EVENTS_CONST.BEFORE_DELETE, eventPayload);
-		//fixme: check promise from circular_buffer
+		// fixme: check promise from circular_buffer
 		let pk: PK;
 		if (model instanceof this.modelClass) {
-			pk = this.modelToPkFn(model as T)
+			pk = this.modelToPkFn(model as T);
 		} else {
 			pk = model as PK;
 		}
@@ -59,14 +53,14 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 		return model;
 	}
 
-	async edit(model: T): Promise<T> {
+	public async edit (model: T): Promise<T> {
 		const eventPayload = {
 			repo: this,
-			model
+			model,
 		};
 
 		this.eventHandler.emit(EVENTS_CONST.BEFORE_EDIT, eventPayload);
-		//fixme: check promise from circular_buffer
+		// fixme: check promise from circular_buffer
 
 		const pk = this.modelToPkFn(model);
 		await this.buffer.set(this.getPk(pk), model);
@@ -74,7 +68,7 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 		return model;
 	}
 
-	async get(primaryKey: PK): Promise<T> {
+	public async get (primaryKey: PK): Promise<T> {
 		const eventPayload = {
 			repo: this,
 			primaryKey,
@@ -88,10 +82,10 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 		eventPayload.model = model;
 		this.eventHandler.emit(EVENTS_CONST.AFTER_GET, eventPayload);
 
-		return model
+		return model;
 	}
 
-	async search(mongoQuery: Object, skip: number = 0, limit: number = 10): Promise<T[]> {
+	public async search (mongoQuery: Object, skip: number = 0, limit: number = 10): Promise<T[]> {
 		const eventPayload = {
 			repo: this,
 			mongoQuery,
@@ -110,6 +104,11 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 		this.eventHandler.emit(EVENTS_CONST.AFTER_SEARCH, eventPayload);
 
 		return result;
+	}
+
+	private getPk (primaryKey: PK): string {
+		const key = typeof primaryKey === "string" ? primaryKey : JSON.stringify(primaryKey);
+		return key;
 	}
 
 }
