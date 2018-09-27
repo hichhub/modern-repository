@@ -1,0 +1,24 @@
+{
+    "defaultSeverity": "error",
+    "extends": "./node_modules/tslint/lib/configs/recommended",
+    "rules": {
+        "semicolon": [true, "always"],
+        "quotemark": [true, "double", "jsx-double"],
+        "indent": [true, "tabs", 4],
+        "linebreak-style": [true, "LF"],
+        "space-before-function-paren": [true, "always"],
+        "arrow-return-shorthand": [true, "always"],
+        "promise-function-async": true,
+        "no-console": false
+    },
+    "rulesDirectory": [],
+    "linterOptions": {
+        "include": [
+            "tests",
+            "src"
+        ],
+        "exclude": [
+            "node_modules"
+        ]
+    }
+}
