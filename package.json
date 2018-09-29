@@ -20,6 +20,7 @@
   "dependencies": {
     "@hichestan/ui-misc": "git+ssh://git@github.com/hichhub/misc.git#master",
     "circular_buffer": "git+ssh://git@github.com/hichhub/circular_buffer.git#master",
+    "es6-promise": "^4.2.5",
     "pino": "^5.6.2",
     "sift": "^6.0.0",
     "tslint": "^5.11.0",
