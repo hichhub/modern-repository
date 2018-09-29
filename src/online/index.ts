@@ -1,114 +1,172 @@
 import {IEventEmitter} from "@hichestan/ui-misc/src/EventHandler";
-import {IPersistableCircularBuffer} from "circular_buffer/src/interfaces/ICircularBuffer";
-import sift from "sift";
-import {EVENTS_CONST} from "../consts";
+import IRestProvider from "@hichestan/ui-misc/src/RestProvider/IRestProvider";
+import {EVENTS_CONST, REPO_ACTIONS} from "../consts";
 import IRepository from "../IRepository";
 
-export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
+export interface IRepoActionParam<T> {
+	id?: string;
+	skip?: number;
+	limit?: number;
+	model?: T;
+}
+
+export interface IEventPayload<T, PK, R> {
+	model?: T;
+	models?: T[];
+	repo?: R;
+	url?: string;
+	primaryKey?: PK;
+	skip?: number;
+	limit?: number;
+	mongoQuery?: object;
+}
+
+export default class OnlineRepository<T, PK> implements IRepository<T, PK> {
 
 	private eventHandler: IEventEmitter;
-	private buffer: IPersistableCircularBuffer<T>;
+	private restProvider: IRestProvider<T>;
 	private modelToPkFn: (model: T) => PK;
 	private modelClass: T;
+	private baseUrl: string;
+	private urlBuilder: (repoAction: string, baseUrl: string, params?: IRepoActionParam<T>) => string;
 
-	constructor (modelClass: T, eventHandler: IEventEmitter, buffer: IPersistableCircularBuffer<T>,
-				          modelToPkFn: (model: T) => PK) {
-		this.modelClass = modelClass;
-		this.eventHandler = eventHandler;
-		this.buffer = buffer;
-		this.modelToPkFn = modelToPkFn;
+	protected defaultUrlBuilder(repoAction: string, baseUrl: string, params?: IRepoActionParam<T>): string {
+		switch (repoAction) {
+			case REPO_ACTIONS.ADD:
+				return baseUrl;
+			case REPO_ACTIONS.EDIT:
+			case REPO_ACTIONS.GET:
+			case REPO_ACTIONS.DELETE:
+				return `${baseUrl}/${params.id}`;
+			case REPO_ACTIONS.SEARCH:
+				return `${baseUrl}/${params.skip}/${params.limit}`;
+		}
+
+		return baseUrl;
 	}
 
-	public async add (model: T): Promise<T> {
-		const eventPayload = {
+	constructor(modelClass: T, eventHandler: IEventEmitter, restProvider: IRestProvider<T>,
+				modelToPkFn: (model: T) => PK, baseUrl: string,
+				urlBuilder?: (repoAction: string, baseUrl: string, params?: IRepoActionParam<T>) => string) {
+		this.modelClass = modelClass;
+		this.eventHandler = eventHandler;
+		this.restProvider = restProvider;
+		this.modelToPkFn = modelToPkFn;
+		this.baseUrl = baseUrl;
+		this.urlBuilder = urlBuilder || this.defaultUrlBuilder;
+	}
+
+	public async add(model: T): Promise<T> {
+		const url = this.urlBuilder(REPO_ACTIONS.ADD, this.baseUrl);
+
+		const eventPayload: IEventPayload<T, PK, OnlineRepository<T, PK>> = {
 			model,
 			repo: this,
+			url,
 		};
 
 		this.eventHandler.emit(EVENTS_CONST.BEFORE_ADD, eventPayload);
-		// fixme: check promise from circular_buffer
 
-		const pk = this.modelToPkFn(model);
-		await this.buffer.set(this.getPk(pk), model);
+		const resultModel = await this.restProvider.create(url, model);
+		eventPayload.model = resultModel;
+
 		this.eventHandler.emit(EVENTS_CONST.AFTER_ADD, eventPayload);
-		return model;
+
+		return resultModel;
 	}
 
-	public async delete (model: T | PK): Promise<boolean | T> {
-		const eventPayload = {
-			model,
-			repo: this,
-		};
-
-		this.eventHandler.emit(EVENTS_CONST.BEFORE_DELETE, eventPayload);
-		// fixme: check promise from circular_buffer
+	public async delete(model: T | PK): Promise<boolean | T> {
 		let pk: PK;
+
 		if (model instanceof this.modelClass) {
 			pk = this.modelToPkFn(model as T);
 		} else {
 			pk = model as PK;
 		}
 		const pkStr = this.getPk(pk);
-		await this.buffer.del(pkStr);
+		const url = this.urlBuilder(REPO_ACTIONS.DELETE, this.baseUrl, {id: pkStr});
+
+		const eventPayload: IEventPayload<T, PK, OnlineRepository<T, PK>> = {
+			model: model as T,
+			repo: this,
+			url,
+		};
+
+		this.eventHandler.emit(EVENTS_CONST.BEFORE_DELETE, eventPayload);
+
+		await this.restProvider.delete(url);
+
 		this.eventHandler.emit(EVENTS_CONST.AFTER_DELETE, eventPayload);
-		return model;
+
+		return true;
 	}
 
-	public async edit (model: T): Promise<T> {
-		const eventPayload = {
-			repo: this,
+	public async edit(model: T): Promise<T> {
+		const pk = this.modelToPkFn(model);
+		const pkStr = this.getPk(pk);
+		const url = this.urlBuilder(REPO_ACTIONS.EDIT, this.baseUrl, {id: pkStr});
+
+		const eventPayload: IEventPayload<T, PK, OnlineRepository<T, PK>> = {
 			model,
+			repo: this,
+			url,
 		};
 
 		this.eventHandler.emit(EVENTS_CONST.BEFORE_EDIT, eventPayload);
-		// fixme: check promise from circular_buffer
 
-		const pk = this.modelToPkFn(model);
-		await this.buffer.set(this.getPk(pk), model);
+		const resultModel = await this.restProvider.edit(url, model);
+
+		eventPayload.model = resultModel;
 		this.eventHandler.emit(EVENTS_CONST.AFTER_EDIT, eventPayload);
-		return model;
+
+		return resultModel;
 	}
 
-	public async get (primaryKey: PK): Promise<T> {
-		const eventPayload = {
+	public async get(primaryKey: PK): Promise<T> {
+
+		const pkStr = this.getPk(primaryKey);
+		const url = this.urlBuilder(REPO_ACTIONS.GET, this.baseUrl, {id: pkStr});
+
+		const eventPayload: IEventPayload<T, PK, OnlineRepository<T, PK>> = {
 			model: null,
 			primaryKey,
 			repo: this,
+			url,
 		};
 
 		this.eventHandler.emit(EVENTS_CONST.BEFORE_GET, eventPayload);
 
-		const model = await this.buffer.get(this.getPk(primaryKey));
+		const resultModel = await this.restProvider.get(url);
 
-		eventPayload.model = model;
+		eventPayload.model = resultModel;
 		this.eventHandler.emit(EVENTS_CONST.AFTER_GET, eventPayload);
 
-		return model;
+		return resultModel;
 	}
 
-	public async search (mongoQuery: object, skip: number = 0, limit: number = 10): Promise<T[]> {
-		const eventPayload = {
+	public async search(mongoQuery: object, skip: number = 0, limit: number = 10): Promise<T[]> {
+
+		const url = this.urlBuilder(REPO_ACTIONS.SEARCH, this.baseUrl, {skip, limit});
+
+		const eventPayload: IEventPayload<T, PK, OnlineRepository<T, PK>> = {
 			limit,
 			models: null,
 			mongoQuery,
 			repo: this,
 			skip,
+			url,
 		};
 
 		this.eventHandler.emit(EVENTS_CONST.BEFORE_SEARCH, eventPayload);
-		const dataArray = await this.buffer.toArray((v) => !!v);
-		// @ts-ignore
-		const result = sift(mongoQuery, dataArray)
-			.splice(skip, limit);
-		// fixme:: handle order in query
+		const dataArray = await this.restProvider.search(url, mongoQuery);
 
-		eventPayload.models = result;
+		eventPayload.models = dataArray;
 		this.eventHandler.emit(EVENTS_CONST.AFTER_SEARCH, eventPayload);
 
-		return result;
+		return dataArray;
 	}
 
-	private getPk (primaryKey: PK): string {
+	private getPk(primaryKey: PK): string {
 		const key = typeof primaryKey === "string" ? primaryKey : JSON.stringify(primaryKey);
 		return key;
 	}

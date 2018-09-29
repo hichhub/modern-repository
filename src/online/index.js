@@ -35,47 +35,58 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var sift_1 = require("sift");
 var consts_1 = require("../consts");
-var OfflineRepository = /** @class */ (function () {
-    function OfflineRepository(modelClass, eventHandler, buffer, modelToPkFn) {
+var OnlineRepository = /** @class */ (function () {
+    function OnlineRepository(modelClass, eventHandler, restProvider, modelToPkFn, baseUrl, urlBuilder) {
         this.modelClass = modelClass;
         this.eventHandler = eventHandler;
-        this.buffer = buffer;
+        this.restProvider = restProvider;
         this.modelToPkFn = modelToPkFn;
+        this.baseUrl = baseUrl;
+        this.urlBuilder = urlBuilder || this.defaultUrlBuilder;
     }
-    OfflineRepository.prototype.add = function (model) {
+    OnlineRepository.prototype.defaultUrlBuilder = function (repoAction, baseUrl, params) {
+        switch (repoAction) {
+            case consts_1.REPO_ACTIONS.ADD:
+                return baseUrl;
+            case consts_1.REPO_ACTIONS.EDIT:
+            case consts_1.REPO_ACTIONS.GET:
+            case consts_1.REPO_ACTIONS.DELETE:
+                return baseUrl + "/" + params.id;
+            case consts_1.REPO_ACTIONS.SEARCH:
+                return baseUrl + "/" + params.skip + "/" + params.limit;
+        }
+        return baseUrl;
+    };
+    OnlineRepository.prototype.add = function (model) {
         return __awaiter(this, void 0, void 0, function () {
-            var eventPayload, pk;
+            var url, eventPayload, resultModel;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        url = this.urlBuilder(consts_1.REPO_ACTIONS.ADD, this.baseUrl);
                         eventPayload = {
                             model: model,
-                            repo: this
+                            repo: this,
+                            url: url
                         };
                         this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_ADD, eventPayload);
-                        pk = this.modelToPkFn(model);
-                        return [4 /*yield*/, this.buffer.set(this.getPk(pk), model)];
+                        return [4 /*yield*/, this.restProvider.create(url, model)];
                     case 1:
-                        _a.sent();
+                        resultModel = _a.sent();
+                        eventPayload.model = resultModel;
                         this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_ADD, eventPayload);
-                        return [2 /*return*/, model];
+                        return [2 /*return*/, resultModel];
                 }
             });
         });
     };
-    OfflineRepository.prototype["delete"] = function (model) {
+    OnlineRepository.prototype["delete"] = function (model) {
         return __awaiter(this, void 0, void 0, function () {
-            var eventPayload, pk, pkStr;
+            var pk, pkStr, url, eventPayload;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        eventPayload = {
-                            model: model,
-                            repo: this
-                        };
-                        this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_DELETE, eventPayload);
                         if (model instanceof this.modelClass) {
                             pk = this.modelToPkFn(model);
                         }
@@ -83,91 +94,104 @@ var OfflineRepository = /** @class */ (function () {
                             pk = model;
                         }
                         pkStr = this.getPk(pk);
-                        return [4 /*yield*/, this.buffer.del(pkStr)];
+                        url = this.urlBuilder(consts_1.REPO_ACTIONS.DELETE, this.baseUrl, { id: pkStr });
+                        eventPayload = {
+                            model: model,
+                            repo: this,
+                            url: url
+                        };
+                        this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_DELETE, eventPayload);
+                        return [4 /*yield*/, this.restProvider["delete"](url)];
                     case 1:
                         _a.sent();
                         this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_DELETE, eventPayload);
-                        return [2 /*return*/, model];
+                        return [2 /*return*/, true];
                 }
             });
         });
     };
-    OfflineRepository.prototype.edit = function (model) {
+    OnlineRepository.prototype.edit = function (model) {
         return __awaiter(this, void 0, void 0, function () {
-            var eventPayload, pk;
+            var pk, pkStr, url, eventPayload, resultModel;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        pk = this.modelToPkFn(model);
+                        pkStr = this.getPk(pk);
+                        url = this.urlBuilder(consts_1.REPO_ACTIONS.EDIT, this.baseUrl, { id: pkStr });
                         eventPayload = {
+                            model: model,
                             repo: this,
-                            model: model
+                            url: url
                         };
                         this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_EDIT, eventPayload);
-                        pk = this.modelToPkFn(model);
-                        return [4 /*yield*/, this.buffer.set(this.getPk(pk), model)];
+                        return [4 /*yield*/, this.restProvider.edit(url, model)];
                     case 1:
-                        _a.sent();
+                        resultModel = _a.sent();
+                        eventPayload.model = resultModel;
                         this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_EDIT, eventPayload);
-                        return [2 /*return*/, model];
+                        return [2 /*return*/, resultModel];
                 }
             });
         });
     };
-    OfflineRepository.prototype.get = function (primaryKey) {
+    OnlineRepository.prototype.get = function (primaryKey) {
         return __awaiter(this, void 0, void 0, function () {
-            var eventPayload, model;
+            var pkStr, url, eventPayload, resultModel;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        pkStr = this.getPk(primaryKey);
+                        url = this.urlBuilder(consts_1.REPO_ACTIONS.GET, this.baseUrl, { id: pkStr });
                         eventPayload = {
                             model: null,
                             primaryKey: primaryKey,
-                            repo: this
+                            repo: this,
+                            url: url
                         };
                         this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_GET, eventPayload);
-                        return [4 /*yield*/, this.buffer.get(this.getPk(primaryKey))];
+                        return [4 /*yield*/, this.restProvider.get(url)];
                     case 1:
-                        model = _a.sent();
-                        eventPayload.model = model;
+                        resultModel = _a.sent();
+                        eventPayload.model = resultModel;
                         this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_GET, eventPayload);
-                        return [2 /*return*/, model];
+                        return [2 /*return*/, resultModel];
                 }
             });
         });
     };
-    OfflineRepository.prototype.search = function (mongoQuery, skip, limit) {
+    OnlineRepository.prototype.search = function (mongoQuery, skip, limit) {
         if (skip === void 0) { skip = 0; }
         if (limit === void 0) { limit = 10; }
         return __awaiter(this, void 0, void 0, function () {
-            var eventPayload, dataArray, result;
+            var url, eventPayload, dataArray;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        url = this.urlBuilder(consts_1.REPO_ACTIONS.SEARCH, this.baseUrl, { skip: skip, limit: limit });
                         eventPayload = {
                             limit: limit,
                             models: null,
                             mongoQuery: mongoQuery,
                             repo: this,
-                            skip: skip
+                            skip: skip,
+                            url: url
                         };
                         this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_SEARCH, eventPayload);
-                        return [4 /*yield*/, this.buffer.toArray(function (v) { return !!v; })];
+                        return [4 /*yield*/, this.restProvider.search(url, mongoQuery)];
                     case 1:
                         dataArray = _a.sent();
-                        result = sift_1["default"](mongoQuery, dataArray)
-                            .splice(skip, limit);
-                        // fixme:: handle order in query
-                        eventPayload.models = result;
+                        eventPayload.models = dataArray;
                         this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_SEARCH, eventPayload);
-                        return [2 /*return*/, result];
+                        return [2 /*return*/, dataArray];
                 }
             });
         });
     };
-    OfflineRepository.prototype.getPk = function (primaryKey) {
+    OnlineRepository.prototype.getPk = function (primaryKey) {
         var key = typeof primaryKey === "string" ? primaryKey : JSON.stringify(primaryKey);
         return key;
     };
-    return OfflineRepository;
+    return OnlineRepository;
 }());
-exports["default"] = OfflineRepository;
+exports["default"] = OnlineRepository;
