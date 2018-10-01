@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/hichhub/modern-repository#readme",
   "dependencies": {
-    "@hichestan/ui-misc": "git+ssh://git@github.com/hichhub/misc.git#master",
-    "circular_buffer": "git+ssh://git@github.com/hichhub/circular_buffer.git#master",
+    "@hichestan/ui-misc": "https://github.com/hichhub/misc.git#master",
+    "circular_buffer": "https://github.com/hichhub/circular_buffer.git#master",
     "es6-promise": "^4.2.5",
     "pino": "^5.6.2",
     "sift": "^6.0.0",
