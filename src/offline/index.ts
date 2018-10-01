@@ -77,7 +77,7 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 		return model;
 	}
 
-	public async search (mongoQuery: Object, skip: number = 0, limit: number = 10): Promise<T[]> {
+	public async search (mongoQuery: object, skip: number = 0, limit: number = 10): Promise<T[]> {
 		const eventPayload = {
 			repo: this,
 			mongoQuery,

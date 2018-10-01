@@ -26,13 +26,14 @@ export default class Repository<T, PK> implements IRepository<T, PK> {
 		}
 	}
 
-	public async delete(model: T | PK): Promise<boolean | T> {
+	public async delete(pk: PK): Promise<boolean> {
 		if (this.isOnline()) {
-			return this.onlineRepo.delete(model);
+			return this.onlineRepo.delete(pk);
 		} else {
 			// return this.offlineRepo.delete(model);
 			throw new Error("Delete method is not callable in offline mode");
 		}
+		return true;
 	}
 
 	public async edit(model: T): Promise<T> {
