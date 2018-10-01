@@ -38,8 +38,7 @@ exports.__esModule = true;
 var sift_1 = require("sift");
 var consts_1 = require("../consts");
 var OfflineRepository = /** @class */ (function () {
-    function OfflineRepository(modelClass, eventHandler, buffer, modelToPkFn) {
-        this.modelClass = modelClass;
+    function OfflineRepository(eventHandler, buffer, modelToPkFn) {
         this.eventHandler = eventHandler;
         this.buffer = buffer;
         this.modelToPkFn = modelToPkFn;

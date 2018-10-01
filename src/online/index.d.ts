@@ -21,11 +21,10 @@ export default class OnlineRepository<T, PK> implements IRepository<T, PK> {
     private eventHandler;
     private restProvider;
     private modelToPkFn;
-    private modelClass;
     private baseUrl;
     private urlBuilder;
     protected defaultUrlBuilder(repoAction: string, baseUrl: string, params?: IRepoActionParam<T>): string;
-    constructor(modelClass: T, eventHandler: IEventEmitter, restProvider: IRestProvider<T>, modelToPkFn: (model: T) => PK, baseUrl: string, urlBuilder?: (repoAction: string, baseUrl: string, params?: IRepoActionParam<T>) => string);
+    constructor(eventHandler: IEventEmitter, restProvider: IRestProvider<T>, modelToPkFn: (model: T) => PK, baseUrl: string, urlBuilder?: (repoAction: string, baseUrl: string, params?: IRepoActionParam<T>) => string);
     add(model: T): Promise<T>;
     delete(pk: PK): Promise<boolean>;
     edit(model: T): Promise<T>;

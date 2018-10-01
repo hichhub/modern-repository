@@ -37,8 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var consts_1 = require("../consts");
 var OnlineRepository = /** @class */ (function () {
-    function OnlineRepository(modelClass, eventHandler, restProvider, modelToPkFn, baseUrl, urlBuilder) {
-        this.modelClass = modelClass;
+    function OnlineRepository(eventHandler, restProvider, modelToPkFn, baseUrl, urlBuilder) {
         this.eventHandler = eventHandler;
         this.restProvider = restProvider;
         this.modelToPkFn = modelToPkFn;

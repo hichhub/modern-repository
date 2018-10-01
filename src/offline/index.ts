@@ -9,10 +9,8 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 	private eventHandler: IEventEmitter;
 	private buffer: IPersistableCircularBuffer<T>;
 	private modelToPkFn: (model: T) => PK;
-	private modelClass: T;
 
-	constructor (modelClass: T, eventHandler: IEventEmitter, buffer: IPersistableCircularBuffer<T>, modelToPkFn: (model: T) => PK) {
-		this.modelClass = modelClass;
+	constructor ( eventHandler: IEventEmitter, buffer: IPersistableCircularBuffer<T>, modelToPkFn: (model: T) => PK) {
 		this.eventHandler = eventHandler;
 		this.buffer = buffer;
 		this.modelToPkFn = modelToPkFn;

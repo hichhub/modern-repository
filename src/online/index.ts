@@ -26,7 +26,6 @@ export default class OnlineRepository<T, PK> implements IRepository<T, PK> {
 	private eventHandler: IEventEmitter;
 	private restProvider: IRestProvider<T>;
 	private modelToPkFn: (model: T) => PK;
-	private modelClass: T;
 	private baseUrl: string;
 	private urlBuilder: (repoAction: string, baseUrl: string, params?: IRepoActionParam<T>) => string;
 
@@ -45,10 +44,9 @@ export default class OnlineRepository<T, PK> implements IRepository<T, PK> {
 		return baseUrl;
 	}
 
-	constructor(modelClass: T, eventHandler: IEventEmitter, restProvider: IRestProvider<T>,
+	constructor(eventHandler: IEventEmitter, restProvider: IRestProvider<T>,
 				modelToPkFn: (model: T) => PK, baseUrl: string,
 				urlBuilder?: (repoAction: string, baseUrl: string, params?: IRepoActionParam<T>) => string) {
-		this.modelClass = modelClass;
 		this.eventHandler = eventHandler;
 		this.restProvider = restProvider;
 		this.modelToPkFn = modelToPkFn;

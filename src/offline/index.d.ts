@@ -5,8 +5,7 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
     private eventHandler;
     private buffer;
     private modelToPkFn;
-    private modelClass;
-    constructor(modelClass: T, eventHandler: IEventEmitter, buffer: IPersistableCircularBuffer<T>, modelToPkFn: (model: T) => PK);
+    constructor(eventHandler: IEventEmitter, buffer: IPersistableCircularBuffer<T>, modelToPkFn: (model: T) => PK);
     add(model: T): Promise<T>;
     delete(pk: PK): Promise<boolean>;
     edit(model: T): Promise<T>;
