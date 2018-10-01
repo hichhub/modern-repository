@@ -81,22 +81,16 @@ var OnlineRepository = /** @class */ (function () {
             });
         });
     };
-    OnlineRepository.prototype["delete"] = function (model) {
+    OnlineRepository.prototype["delete"] = function (pk) {
         return __awaiter(this, void 0, void 0, function () {
-            var pk, pkStr, url, eventPayload;
+            var pkStr, url, eventPayload;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (model instanceof this.modelClass) {
-                            pk = this.modelToPkFn(model);
-                        }
-                        else {
-                            pk = model;
-                        }
                         pkStr = this.getPk(pk);
                         url = this.urlBuilder(consts_1.REPO_ACTIONS.DELETE, this.baseUrl, { id: pkStr });
                         eventPayload = {
-                            model: model,
+                            primaryKey: pk,
                             repo: this,
                             url: url
                         };

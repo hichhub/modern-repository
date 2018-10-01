@@ -75,19 +75,13 @@ export default class OnlineRepository<T, PK> implements IRepository<T, PK> {
 		return resultModel;
 	}
 
-	public async delete(model: T | PK): Promise<boolean | T> {
-		let pk: PK;
-
-		if (model instanceof this.modelClass) {
-			pk = this.modelToPkFn(model as T);
-		} else {
-			pk = model as PK;
-		}
+	public async delete(pk: PK): Promise<boolean> {
 		const pkStr = this.getPk(pk);
+
 		const url = this.urlBuilder(REPO_ACTIONS.DELETE, this.baseUrl, {id: pkStr});
 
 		const eventPayload: IEventPayload<T, PK, OnlineRepository<T, PK>> = {
-			model: model as T,
+			primaryKey: pk,
 			repo: this,
 			url,
 		};

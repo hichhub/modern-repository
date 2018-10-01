@@ -33,24 +33,18 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 		return model;
 	}
 
-	public async delete (model: T | PK): Promise<boolean | T> {
+	public async delete (pk: PK): Promise<boolean> {
 		const eventPayload = {
-			model,
+			primaryKey: pk,
 			repo: this,
 		};
 
 		this.eventHandler.emit(EVENTS_CONST.BEFORE_DELETE, eventPayload);
 		// fixme: check promise from circular_buffer
-		let pk: PK;
-		if (model instanceof this.modelClass) {
-			pk = this.modelToPkFn(model as T);
-		} else {
-			pk = model as PK;
-		}
 		const pkStr = this.getPk(pk);
 		await this.buffer.del(pkStr);
 		this.eventHandler.emit(EVENTS_CONST.AFTER_DELETE, eventPayload);
-		return model;
+		return true;
 	}
 
 	public async edit (model: T): Promise<T> {

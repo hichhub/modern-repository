@@ -65,29 +65,23 @@ var OfflineRepository = /** @class */ (function () {
             });
         });
     };
-    OfflineRepository.prototype["delete"] = function (model) {
+    OfflineRepository.prototype["delete"] = function (pk) {
         return __awaiter(this, void 0, void 0, function () {
-            var eventPayload, pk, pkStr;
+            var eventPayload, pkStr;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         eventPayload = {
-                            model: model,
+                            primaryKey: pk,
                             repo: this
                         };
                         this.eventHandler.emit(consts_1.EVENTS_CONST.BEFORE_DELETE, eventPayload);
-                        if (model instanceof this.modelClass) {
-                            pk = this.modelToPkFn(model);
-                        }
-                        else {
-                            pk = model;
-                        }
                         pkStr = this.getPk(pk);
                         return [4 /*yield*/, this.buffer.del(pkStr)];
                     case 1:
                         _a.sent();
                         this.eventHandler.emit(consts_1.EVENTS_CONST.AFTER_DELETE, eventPayload);
-                        return [2 /*return*/, model];
+                        return [2 /*return*/, true];
                 }
             });
         });
