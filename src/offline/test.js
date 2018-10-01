@@ -36,11 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 exports.__esModule = true;
+var EventHandler_1 = require("@hichestan/ui-misc/src/EventHandler");
 var memkvstore_1 = require("circular_buffer/src/modules/memkvstore");
 var persistable_circularbuffer_1 = require("circular_buffer/src/modules/persistable_circularbuffer");
-var index_1 = require("./index");
-var EventHandler_1 = require("@hichestan/ui-misc/src/EventHandler");
 var consts_1 = require("../consts");
+var index_1 = require("./index");
 var Model = /** @class */ (function () {
     function Model() {
     }
@@ -51,6 +51,7 @@ var Model2 = /** @class */ (function () {
     }
     return Model2;
 }());
+// @ts-ignore
 var Main = function () { return __awaiter(_this, void 0, void 0, function () {
     var store, buffer, eventHandler, offRepo, i, newModel, newModel2, searchResult;
     return __generator(this, function (_a) {
@@ -59,7 +60,7 @@ var Main = function () { return __awaiter(_this, void 0, void 0, function () {
                 store = new memkvstore_1["default"]();
                 buffer = new persistable_circularbuffer_1["default"](1000, store, "test");
                 eventHandler = EventHandler_1["default"].getInstance("test");
-                offRepo = new index_1["default"](new Model(), eventHandler, buffer, function (x) { return x.p1; });
+                offRepo = new index_1["default"](eventHandler, buffer, function (x) { return x.p1; });
                 eventHandler.on(consts_1.EVENTS_CONST.BEFORE_ADD, function (x) {
                     console.log(consts_1.EVENTS_CONST.BEFORE_ADD, x);
                 });
@@ -82,7 +83,7 @@ var Main = function () { return __awaiter(_this, void 0, void 0, function () {
                     newModel2.p3 = newModel;
                     offRepo.add(newModel2);
                 }
-                return [4 /*yield*/, offRepo.search({ $or: [{ p1: 1 }, { 'p3.p1': 2 }] })];
+                return [4 /*yield*/, offRepo.search({ $or: [{ p1: 1 }, { "p3.p1": 2 }] })];
             case 1:
                 searchResult = _a.sent();
                 console.log("searchResult: ", searchResult);
