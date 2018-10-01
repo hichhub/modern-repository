@@ -38,7 +38,7 @@ export default class OnlineRepository<T, PK> implements IRepository<T, PK> {
 			case REPO_ACTIONS.DELETE:
 				return `${baseUrl}/${params.id}`;
 			case REPO_ACTIONS.SEARCH:
-				return `${baseUrl}/${params.skip}/${params.limit}`;
+				return `${baseUrl}/search/${params.skip}/${params.limit}`;
 		}
 
 		return baseUrl;
