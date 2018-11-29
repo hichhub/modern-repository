@@ -51,6 +51,7 @@ var OnlineRepository = /** @class */ (function () {
             case consts_1.REPO_ACTIONS.EDIT:
                 return baseUrl + "/" + (params.id && params.id ? params.id : '');
             case consts_1.REPO_ACTIONS.GET:
+                return baseUrl;
             case consts_1.REPO_ACTIONS.DELETE:
                 return baseUrl + "/" + params.id;
             case consts_1.REPO_ACTIONS.SEARCH:
