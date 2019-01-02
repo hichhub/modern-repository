@@ -6,8 +6,8 @@ import IRepository from "../IRepository";
 
 export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 
-	private eventHandler: IEventEmitter;
-	private buffer: IPersistableCircularBuffer<T>;
+	protected eventHandler: IEventEmitter;
+	protected buffer: IPersistableCircularBuffer<T>;
 	private modelToPkFn: (model: T) => PK;
 
 	constructor ( eventHandler: IEventEmitter, buffer: IPersistableCircularBuffer<T>, modelToPkFn: (model: T) => PK) {
