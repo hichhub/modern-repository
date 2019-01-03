@@ -23,11 +23,11 @@ export interface IEventPayload<T, PK, R> {
 
 export default class OnlineRepository<T, PK> implements IRepository<T, PK> {
 
-	private eventHandler: IEventEmitter;
-	private restProvider: IRestProvider<T>;
-	private modelToPkFn: (model: T) => PK;
-	private baseUrl: string;
-	private urlBuilder: (repoAction: string, baseUrl: string, params?: IRepoActionParam<T>) => string;
+	protected eventHandler: IEventEmitter;
+	protected restProvider: IRestProvider<T>;
+	protected modelToPkFn: (model: T) => PK;
+	protected baseUrl: string;
+	protected urlBuilder: (repoAction: string, baseUrl: string, params?: IRepoActionParam<T>) => string;
 
 	protected defaultUrlBuilder(repoAction: string, baseUrl: string, params?: IRepoActionParam<T>): string {
 		switch (repoAction) {
@@ -160,7 +160,7 @@ export default class OnlineRepository<T, PK> implements IRepository<T, PK> {
 		return dataArray;
 	}
 
-	private getPk(primaryKey: PK): string {
+	protected getPk(primaryKey: PK): string {
 		const key = typeof primaryKey === "string" ? primaryKey : JSON.stringify(primaryKey);
 		return key;
 	}
