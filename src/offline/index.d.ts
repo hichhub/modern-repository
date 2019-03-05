@@ -11,5 +11,5 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
     edit(model: T): Promise<T>;
     get(primaryKey: PK): Promise<T>;
     search(mongoQuery: object, skip?: number, limit?: number): Promise<T[]>;
-    private getPk;
+    protected getPk(primaryKey: PK): string;
 }

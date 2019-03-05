@@ -98,7 +98,7 @@ export default class OfflineRepository<T, PK> implements IRepository<T, PK> {
 		return result;
 	}
 
-	private getPk (primaryKey: PK): string {
+	protected getPk (primaryKey: PK): string {
 		const key = typeof primaryKey === "string" ? primaryKey : JSON.stringify(primaryKey);
 		return key;
 	}
